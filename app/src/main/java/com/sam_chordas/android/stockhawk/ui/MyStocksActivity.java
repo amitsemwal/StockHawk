@@ -89,6 +89,11 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
                     public void onItemClick(View v, int position) {
                         //TODO:
                         // do something on item click
+                        Intent graphIntent = new Intent(mContext, GraphActivity.class);
+                        mCursor.moveToPosition(position);
+                        graphIntent.putExtra("symbol", mCursor.getString(mCursor.getColumnIndex("symbol")));
+                        mContext.startActivity(graphIntent);
+
                     }
                 }));
         recyclerView.setAdapter(mCursorAdapter);

@@ -17,7 +17,6 @@ public class QuoteColumns {
     public static final String _ID = "_id";
     @DataType(DataType.Type.TEXT)
     @NotNull
-   @Unique(onConflict = ConflictResolutionType.REPLACE)
     public static final String SYMBOL = "symbol";
     @DataType(DataType.Type.TEXT)
     @NotNull
