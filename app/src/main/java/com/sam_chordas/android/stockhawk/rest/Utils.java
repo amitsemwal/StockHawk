@@ -3,6 +3,8 @@ package com.sam_chordas.android.stockhawk.rest;
 import android.content.ContentProviderOperation;
 import android.util.Log;
 
+import com.sam_chordas.android.stockhawk.Quote;
+import com.sam_chordas.android.stockhawk.QuoteBuilder;
 import com.sam_chordas.android.stockhawk.data.QuoteColumns;
 import com.sam_chordas.android.stockhawk.data.QuoteProvider;
 
@@ -54,6 +56,48 @@ public class Utils {
             Log.e(LOG_TAG, "String to JSON failed: " + e);
         }
         return batchOperations;
+    }
+
+    public static ArrayList<Quote> historyQuoteJsonToArrayList(String JSON) {
+
+        ArrayList<Quote> historicalData = new ArrayList<>();
+        JSONObject jsonObject = null;
+        JSONArray resultsArray = null;
+        int index = 0;
+        try {
+            jsonObject = new JSONObject(JSON);
+
+            if (jsonObject != null && jsonObject.length() != 0) {
+
+                jsonObject = jsonObject.getJSONObject("query").getJSONObject("results");
+                resultsArray = jsonObject.getJSONArray("quote");
+                if (resultsArray != null && resultsArray.length() != 0) {
+                    for (int i = 0; i < resultsArray.length(); i++) {
+                        jsonObject = resultsArray.getJSONObject(i);
+
+
+                        if (jsonObject != null) {
+                            historicalData.add(new QuoteBuilder()
+                                    .setClose(jsonObject.getDouble("Close"))
+                                    .setDate(jsonObject.getString("Date"))
+                                    .setHigh(jsonObject.getDouble("High"))
+                                    .setLow(jsonObject.getDouble("Low"))
+                                    .setVolume(jsonObject.getLong("Volume"))
+                                    .setSymbol(jsonObject.getString("Symbol"))
+                                    .createQuote());
+                        }
+                    }
+                }
+
+            }
+        } catch ( NullPointerException e) {
+            Log.e(LOG_TAG, "String to JSON failed: " + e);
+            return null;
+        } catch (JSONException e ) {
+            Log.e(LOG_TAG, "String to JSON failed: " + e);
+            return null;
+        }
+        return historicalData;
     }
 
     public static String truncateBidPrice(String bidPrice) {

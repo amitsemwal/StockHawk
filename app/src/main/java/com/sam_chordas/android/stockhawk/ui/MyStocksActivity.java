@@ -15,7 +15,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.InputType;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,6 +26,7 @@ import com.google.android.gms.gcm.GcmNetworkManager;
 import com.google.android.gms.gcm.PeriodicTask;
 import com.google.android.gms.gcm.Task;
 import com.melnykov.fab.FloatingActionButton;
+import com.sam_chordas.android.stockhawk.Quote;
 import com.sam_chordas.android.stockhawk.R;
 import com.sam_chordas.android.stockhawk.data.QuoteColumns;
 import com.sam_chordas.android.stockhawk.data.QuoteProvider;
@@ -36,6 +36,11 @@ import com.sam_chordas.android.stockhawk.rest.Utils;
 import com.sam_chordas.android.stockhawk.service.StockIntentService;
 import com.sam_chordas.android.stockhawk.service.StockTaskService;
 import com.sam_chordas.android.stockhawk.touch_helper.SimpleItemTouchHelperCallback;
+import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
+import com.squareup.otto.ThreadEnforcer;
+
+import java.util.ArrayList;
 
 public class MyStocksActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -54,11 +59,13 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     private QuoteCursorAdapter mCursorAdapter;
     private Context mContext;
     private Cursor mCursor;
+    public static final Bus bus = new Bus(ThreadEnforcer.ANY);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = this;
+        bus.register(this);
         ConnectivityManager cm =
                 (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
 
@@ -89,10 +96,16 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
                     public void onItemClick(View v, int position) {
                         //TODO:
                         // do something on item click
-                        Intent graphIntent = new Intent(mContext, GraphActivity.class);
                         mCursor.moveToPosition(position);
-                        graphIntent.putExtra("symbol", mCursor.getString(mCursor.getColumnIndex("symbol")));
+                        String selectedSymbol = mCursor.getString(mCursor.getColumnIndex("symbol"));
+                        Intent graphIntent = new Intent(mContext, GraphActivity.class);
+                              graphIntent.putExtra("symbol", mCursor.getString(mCursor.getColumnIndex("symbol")));
                         mContext.startActivity(graphIntent);
+
+                        mServiceIntent.putExtra("tag", "history");
+                        mServiceIntent.putExtra("symbol", selectedSymbol);
+                        //startService(mServiceIntent);
+
 
                     }
                 }));
@@ -119,7 +132,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
                                             new String[]{inputQuote}, null);
                                     if (c.getCount() != 0) {
                                         Toast toast =
-                                                Toast.makeText(MyStocksActivity.this, R.string.duplicate_stock ,
+                                                Toast.makeText(MyStocksActivity.this, R.string.duplicate_stock,
                                                         Toast.LENGTH_LONG);
                                         toast.setGravity(Gravity.CENTER, Gravity.CENTER, 0);
                                         toast.show();
@@ -238,4 +251,12 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
         mCursorAdapter.swapCursor(null);
     }
 
+    @Subscribe
+    public void sendDataToGraphActivity(ArrayList<Quote> historicalData) {
+
+        Intent graphIntent = new Intent(mContext, GraphActivity.class);
+        graphIntent.putParcelableArrayListExtra("graphdata", historicalData);
+        mContext.startActivity(graphIntent);
+
+    }
 }
