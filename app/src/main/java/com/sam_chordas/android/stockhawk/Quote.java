@@ -3,22 +3,33 @@ package com.sam_chordas.android.stockhawk;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+
 /**
  * Created by semwa on 15-04-2016.
  */
 
 
 public class Quote implements Parcelable {
+    public static final Parcelable.Creator<Quote> CREATOR = new Parcelable.Creator<Quote>() {
+        @Override
+        public Quote createFromParcel(Parcel source) {
+            return new Quote(source);
+        }
+
+        @Override
+        public Quote[] newArray(int size) {
+            return new Quote[size];
+        }
+    };
     private String Symbol;
     private double High;
     private double Low;
     private double Close;
     private long Volume;
     private String Date;
-
-    public String getSymbol() {
-        return Symbol;
-    }
 
     public Quote(double high, double low, double close, long volume, String date, String symbol) {
         High = high;
@@ -27,6 +38,19 @@ public class Quote implements Parcelable {
         Volume = volume;
         Date = date;
         Symbol = symbol;
+    }
+
+    protected Quote(Parcel in) {
+        this.Symbol = in.readString();
+        this.High = in.readDouble();
+        this.Low = in.readDouble();
+        this.Close = in.readDouble();
+        this.Volume = in.readLong();
+        this.Date = in.readString();
+    }
+
+    public String getSymbol() {
+        return Symbol;
     }
 
     @Override
@@ -45,8 +69,13 @@ public class Quote implements Parcelable {
         return Close;
     }
 
-    public String getDate() {
+    public String getStrDate() {
         return Date;
+    }
+
+    public java.util.Date getDate() throws ParseException {
+        return new SimpleDateFormat("yyyy-mm-dd", Locale.ENGLISH).parse(Date);
+
     }
 
     public double getHigh() {
@@ -75,27 +104,6 @@ public class Quote implements Parcelable {
         dest.writeLong(this.Volume);
         dest.writeString(this.Date);
     }
-
-    protected Quote(Parcel in) {
-        this.Symbol = in.readString();
-        this.High = in.readDouble();
-        this.Low = in.readDouble();
-        this.Close = in.readDouble();
-        this.Volume = in.readLong();
-        this.Date = in.readString();
-    }
-
-    public static final Parcelable.Creator<Quote> CREATOR = new Parcelable.Creator<Quote>() {
-        @Override
-        public Quote createFromParcel(Parcel source) {
-            return new Quote(source);
-        }
-
-        @Override
-        public Quote[] newArray(int size) {
-            return new Quote[size];
-        }
-    };
 }
 
 

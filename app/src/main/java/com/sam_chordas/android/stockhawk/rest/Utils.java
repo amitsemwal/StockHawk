@@ -19,9 +19,8 @@ import java.util.ArrayList;
  */
 public class Utils {
 
-    private static String LOG_TAG = Utils.class.getSimpleName();
-
     public static boolean showPercent = true;
+    private static String LOG_TAG = Utils.class.getSimpleName();
 
     public static ArrayList quoteJsonToContentVals(String JSON) {
         ArrayList<ContentProviderOperation> batchOperations = new ArrayList<>();

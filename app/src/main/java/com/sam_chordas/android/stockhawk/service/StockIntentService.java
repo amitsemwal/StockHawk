@@ -36,6 +36,7 @@ public class StockIntentService extends IntentService {
         // scheduling a task.
 
         Handler mHandler = new Handler(getMainLooper());
+
         if (stockTaskService.onRunTask(new TaskParams(intent.getStringExtra("tag"), args)) == GcmNetworkManager.RESULT_FAILURE) {
             mHandler.post(new Runnable() {
                 @Override

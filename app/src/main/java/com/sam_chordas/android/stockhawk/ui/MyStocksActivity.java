@@ -44,6 +44,7 @@ import java.util.ArrayList;
 
 public class MyStocksActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
+    public static final Bus bus = new Bus(ThreadEnforcer.ANY);
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
@@ -59,7 +60,6 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     private QuoteCursorAdapter mCursorAdapter;
     private Context mContext;
     private Cursor mCursor;
-    public static final Bus bus = new Bus(ThreadEnforcer.ANY);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,13 +98,13 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
                         // do something on item click
                         mCursor.moveToPosition(position);
                         String selectedSymbol = mCursor.getString(mCursor.getColumnIndex("symbol"));
-                        Intent graphIntent = new Intent(mContext, GraphActivity.class);
-                              graphIntent.putExtra("symbol", mCursor.getString(mCursor.getColumnIndex("symbol")));
-                        mContext.startActivity(graphIntent);
+                        // Intent graphIntent = new Intent(mContext, GraphActivity.class);
+                        //     graphIntent.putExtra("symbol", mCursor.getString(mCursor.getColumnIndex("symbol")));
+                        // mContext.startActivity(graphIntent);
 
                         mServiceIntent.putExtra("tag", "history");
                         mServiceIntent.putExtra("symbol", selectedSymbol);
-                        //startService(mServiceIntent);
+                        startService(mServiceIntent);
 
 
                     }

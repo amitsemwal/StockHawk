@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by sam_chordas on 9/30/15.
@@ -53,6 +54,8 @@ public class StockTaskService extends GcmTaskService {
         Request request = new Request.Builder()
                 .url(url)
                 .build();
+        client.setReadTimeout(3, TimeUnit.MINUTES);
+        client.setConnectTimeout(3, TimeUnit.MINUTES);
 
         Response response = client.newCall(request).execute();
         return response.body().string();
@@ -121,7 +124,7 @@ public class StockTaskService extends GcmTaskService {
             // get symbol from params.getExtra and build query
             String stockInput = params.getExtras().getString("symbol");
             try {
-                urlStringBuilder.append(URLEncoder.encode("\"" + stockInput + "\" and startDate = \"2016-01-11\" and" +
+                urlStringBuilder.append(URLEncoder.encode("\"" + stockInput + "\" and startDate = \"2015-01-11\" and" +
                         " endDate = \"2016-02-10\"", "UTF-8"));
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
@@ -165,10 +168,10 @@ public class StockTaskService extends GcmTaskService {
                             result = GcmNetworkManager.RESULT_FAILURE;
                         }
                     }
-                } catch (RemoteException | OperationApplicationException e) {
+                } catch (RemoteException | OperationApplicationException | NullPointerException e) {
                     Log.e(LOG_TAG, "Error applying batch insert", e);
                 }
-            } catch (IOException e) {
+            } catch (IOException | NullPointerException e) {
                 e.printStackTrace();
             }
         }
