@@ -15,6 +15,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.InputType;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,6 +23,8 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GcmNetworkManager;
 import com.google.android.gms.gcm.PeriodicTask;
 import com.google.android.gms.gcm.Task;
@@ -43,11 +46,13 @@ import java.util.ArrayList;
 public class MyStocksActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     public static final MainThreadBus bus = new MainThreadBus();
+    private static final String LOG_TAG = "MyStocksActivity";
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
 
     private static final int CURSOR_LOADER_ID = 0;
+    private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     boolean isConnected;
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
@@ -109,7 +114,9 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
                 }));
         recyclerView.setAdapter(mCursorAdapter);
 
-
+        if (!checkPlayServices()) {
+            displayToast(getString(R.string.error_old_version));
+        }
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.attachToRecyclerView(recyclerView);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -254,6 +261,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
 
         Intent graphIntent = new Intent(mContext, GraphActivity.class);
         graphIntent.putParcelableArrayListExtra("graphdata", historicalData);
+        graphIntent.putExtra("symbol", historicalData.get(0).getSymbol());
         mContext.startActivity(graphIntent);
 
     }
@@ -286,4 +294,25 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
                 break;
         }
     }
+
+    /**
+     * Check the device to make sure it has the Google Play Services APK. If
+     * it doesn't, display a dialog that allows users to download the APK from
+     * the Google Play Store or enable it in the device's system settings.
+     */
+    private boolean checkPlayServices() {
+        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
+                GooglePlayServicesUtil.getErrorDialog(resultCode, this,
+                        PLAY_SERVICES_RESOLUTION_REQUEST).show();
+            } else {
+                Log.i(LOG_TAG, "This device is not supported.");
+                finish();
+            }
+            return false;
+        }
+        return true;
+    }
 }
+

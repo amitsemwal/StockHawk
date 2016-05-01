@@ -18,10 +18,13 @@
     <string name="succes_new_stock">We have added the symbol you entered.</string>
     <string name="success_graph_stock">see graph.</string>
     <string name="success_init_stock">We have added some symbols you might like.</string>
+    <string name="google_app_id">150504842561</string>
+
 
     <!-- A11y -->
     <string name="a11y_bid_price">Bid price: <xliff:g id="bid_price">%1$s</xliff:g></string>
     <string name="a11y_change">Change: <xliff:g id="change">%1$s</xliff:g></string>
     <string name="a11y_symbol">Stock symbol: <xliff:g id="symbol">%1$s</xliff:g></string>
+    <string name="error_old_version">Your device has old play servicwersion. Stocks not updatedautomatically</string>
 
 </resources>

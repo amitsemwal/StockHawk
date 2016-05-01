@@ -1,9 +1,13 @@
 package com.sam_chordas.android.stockhawk.ui;
 
 import android.app.Activity;
+import android.app.LoaderManager;
 import android.content.Context;
+import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.Loader;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -13,15 +17,18 @@ import com.db.chart.model.LineSet;
 import com.db.chart.view.LineChartView;
 import com.sam_chordas.android.stockhawk.Quote;
 import com.sam_chordas.android.stockhawk.R;
+import com.sam_chordas.android.stockhawk.data.QuoteColumns;
+import com.sam_chordas.android.stockhawk.data.QuoteProvider;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class GraphActivity extends Activity {//}  implements LoaderManager.LoaderCallbacks<Cursor> {
+public class GraphActivity extends Activity implements LoaderManager.LoaderCallbacks<Cursor> {
     public static final int CURSOR_LOADER_ID=0;
     private static final String LOG_TAG = GraphActivity.class.getSimpleName();
     private LineChartView mLineChart;
+    private LineChartView mLineChart1;
     private Intent mServiceIntent;
     private Context mContext;
     private Cursor mCursor;
@@ -41,16 +48,17 @@ public class GraphActivity extends Activity {//}  implements LoaderManager.Loade
                 activeNetwork.isConnectedOrConnecting();
         setContentView(R.layout.activity_line_graph);
         mLineChart = (LineChartView) findViewById(R.id.linechart);
+        mLineChart1 = (LineChartView) findViewById(R.id.linechart1);
 
         Intent intent = getIntent();
-//        mSymbl = intent.getStringExtra("symbol");
+        mSymbl = intent.getStringExtra("symbol");
         //      args.putString("symbol",mSymbl);
         quoteArrayList = intent.getParcelableArrayListExtra("graphdata");
-
+        //   mSymbl = quoteArrayList.get(0).getSymbol();
         drawGraphofLastWeek();
 
 //        Log.e(LOG_TAG, args.getString("symbol"));
-        //   getLoaderManager().initLoader(CURSOR_LOADER_ID, args, this);
+        getLoaderManager().initLoader(CURSOR_LOADER_ID, args, this);
 
     }
 
@@ -76,14 +84,14 @@ public class GraphActivity extends Activity {//}  implements LoaderManager.Loade
         minRange = ((minRange - 99) / 100) * 100;
         minRange = ((minRange - 99) / 100) * 100;
 
-        mLineChart.setAxisBorderValues(minRange - 100, maxRange + 100, 10).setLabelsColor(Color.parseColor("#FF8E9196"));
+        mLineChart.setAxisBorderValues(minRange - 10, maxRange + 10, 10).setLabelsColor(Color.parseColor("#FF8E9196"));
 
         mLineChart.addData(mLineSet);
         mLineChart.show();
 
     }
 
-    /*     @Override
+    @Override
      public void onResume() {
          super.onResume();
          getLoaderManager().restartLoader(CURSOR_LOADER_ID, args, this);
@@ -93,7 +101,7 @@ public class GraphActivity extends Activity {//}  implements LoaderManager.Loade
          return new CursorLoader(this, QuoteProvider.Quotes.CONTENT_URI,
                  new String[]{},
                  QuoteColumns.SYMBOL + " = ?",
-                 new String[]{args.getString("symbol")},
+                 new String[]{mSymbl},
                  null);
      }
 
@@ -101,28 +109,33 @@ public class GraphActivity extends Activity {//}  implements LoaderManager.Loade
      public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
          mCursor = data;
          int i = 1;
- //        return;
- //        DatabaseUtils.dumpCursor(mCursor);
- //
- //        LineSet mLineSet = new LineSet();
- //
- //        ArrayList<Float> range = new ArrayList<Float>();
- //        mCursor.moveToFirst();
- //        while (mCursor.moveToNext()) {
- //            float price = Float.parseFloat(mCursor.getString(mCursor.getColumnIndex(QuoteColumns.BIDPRICE)));
- //            range.add(price);
- //            mLineSet.addPoint(Integer.toString(i), price);
- //            i++;
- //        }
- //
- //        int minRange = Math.round(Collections.min(range));
- //        int maxRange = Math.round(Collections.max(range));
- //
- //        mLineSet.setDotsColor(Color.parseColor("#00BFFF"));
- //        mLineChart.setAxisBorderValues(minRange - 100, maxRange + 100).setLabelsColor(Color.parseColor("#FF8E9196"));
- //
- //        mLineChart.addData(mLineSet);
- //        mLineChart.show();
+
+         DatabaseUtils.dumpCursor(mCursor);
+
+         LineSet mLineSet = new LineSet();
+
+         ArrayList<Float> range = new ArrayList<Float>();
+         mCursor.moveToFirst();
+         while (mCursor.moveToNext()) {
+             float price = Float.parseFloat(mCursor.getString(mCursor.getColumnIndex(QuoteColumns.BIDPRICE)));
+             range.add(price);
+             mLineSet.addPoint(Integer.toString(i), price);
+             i++;
+         }
+
+         int minRange = Math.round(Collections.min(range));
+         int maxRange = Math.round(Collections.max(range));
+
+         maxRange = ((maxRange + 99) / 100) * 100;
+
+         mLineSet.setDotsColor(Color.parseColor("#00BFFF"));
+         mLineSet.setDotsRadius(2);
+         minRange = ((minRange - 99) / 100) * 100;
+         minRange = ((minRange - 99) / 100) * 100;
+
+         mLineChart1.setAxisBorderValues(minRange - 10, maxRange + 10, 10).setLabelsColor(Color.parseColor("#FF8E9196"));
+         mLineChart1.addData(mLineSet);
+         mLineChart1.show();
 
 
      }
@@ -131,7 +144,7 @@ public class GraphActivity extends Activity {//}  implements LoaderManager.Loade
      public void onLoaderReset(Loader<Cursor> loader) {
 
      }
- */
+
     @Subscribe
     private void drawGraphofHistoricalData() {
         LineSet mLineSet = new LineSet();
