@@ -36,15 +36,13 @@ import com.sam_chordas.android.stockhawk.rest.Utils;
 import com.sam_chordas.android.stockhawk.service.StockIntentService;
 import com.sam_chordas.android.stockhawk.service.StockTaskService;
 import com.sam_chordas.android.stockhawk.touch_helper.SimpleItemTouchHelperCallback;
-import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
-import com.squareup.otto.ThreadEnforcer;
 
 import java.util.ArrayList;
 
 public class MyStocksActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    public static final Bus bus = new Bus(ThreadEnforcer.ANY);
+    public static final MainThreadBus bus = new MainThreadBus();
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
@@ -82,7 +80,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
             if (isConnected) {
                 startService(mServiceIntent);
             } else {
-                networkToast();
+                displayToast(getString(R.string.network_toast));
             }
         }
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
@@ -147,7 +145,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
                             })
                             .show();
                 } else {
-                    networkToast();
+                    displayToast(getString(R.string.network_toast));
                 }
 
             }
@@ -190,8 +188,8 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
         getLoaderManager().restartLoader(CURSOR_LOADER_ID, null, this);
     }
 
-    public void networkToast() {
-        Toast.makeText(mContext, getString(R.string.network_toast), Toast.LENGTH_SHORT).show();
+    public void displayToast(String message) {
+        Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show();
     }
 
     public void restoreActionBar() {
@@ -258,5 +256,34 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
         graphIntent.putParcelableArrayListExtra("graphdata", historicalData);
         mContext.startActivity(graphIntent);
 
+    }
+
+    @Subscribe
+    public void handleResult(String tagAndResultCode) {
+        String tag = tagAndResultCode.split(" ")[0];
+        int resultCode = Integer.parseInt(tagAndResultCode.split(" ")[1]);
+        switch (tag) {
+            case "init":
+                if (resultCode == GcmNetworkManager.RESULT_SUCCESS)
+                    displayToast(getString(R.string.success_init_stock));
+                else
+                    displayToast(getString(R.string.error_init_stock));
+                break;
+            case "add":
+                if (resultCode == GcmNetworkManager.RESULT_SUCCESS)
+                    displayToast(getString(R.string.succes_new_stock));
+                else
+                    displayToast(getString(R.string.error_new_stock));
+
+                break;
+            case "history":
+
+                if (resultCode == GcmNetworkManager.RESULT_SUCCESS)
+                    displayToast(getString(R.string.success_graph_stock));
+                else
+                    displayToast(getString(R.string.error_graph_stock));
+
+                break;
+        }
     }
 }

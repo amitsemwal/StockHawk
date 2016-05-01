@@ -11,4 +11,10 @@
     <string name="input_prefill"></string>
     <string name="network_toast">Uh-oh! This app requires an internet connection</string>
     <string name="duplicate_stock">Uh-oh! This stock is already saved!</string>
+    <string name="error_new_stock">We couldnt add the symbol you entered.</string>
+    <string name="error_graph_stock">We couldn fetch data for graph.</string>
+    <string name="error_init_stock">We couldnt fetch data for initialisation.</string>
+    <string name="succes_new_stock">We have added the symbol you entered.</string>
+    <string name="success_graph_stock">see graph.</string>
+    <string name="success_init_stock">We have added some symbols you might like.</string>
 </resources>
