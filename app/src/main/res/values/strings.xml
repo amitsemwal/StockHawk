@@ -1,4 +1,5 @@
-<resources>
+<resources xmlns:xliff="http://schemas.android.com/apk/res-auto">
+
     <string name="app_name">Stock Hawk</string>
 
     <string name="action_example">Example action</string>
@@ -17,4 +18,10 @@
     <string name="succes_new_stock">We have added the symbol you entered.</string>
     <string name="success_graph_stock">see graph.</string>
     <string name="success_init_stock">We have added some symbols you might like.</string>
+
+    <!-- A11y -->
+    <string name="a11y_bid_price">Bid price: <xliff:g id="bid_price">%1$s</xliff:g></string>
+    <string name="a11y_change">Change: <xliff:g id="change">%1$s</xliff:g></string>
+    <string name="a11y_symbol">Stock symbol: <xliff:g id="symbol">%1$s</xliff:g></string>
+
 </resources>
