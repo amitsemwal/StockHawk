@@ -13,6 +13,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Locale;
 
 /**
  * Created by sam_chordas on 10/8/15.
@@ -57,6 +59,13 @@ public class Utils {
         return batchOperations;
     }
 
+    public static String getDate(int daysSinceToday) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_YEAR, -daysSinceToday);
+        return String.format(Locale.ENGLISH, "%04d-%02d-%02d", calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1,
+                calendar.get(Calendar.DATE));
+    }
+
     public static ArrayList<Quote> historyQuoteJsonToArrayList(String JSON) {
 
         ArrayList<Quote> historicalData = new ArrayList<>();
@@ -89,10 +98,10 @@ public class Utils {
                 }
 
             }
-        } catch ( NullPointerException e) {
+        } catch (NullPointerException e) {
             Log.e(LOG_TAG, "String to JSON failed: " + e);
             return null;
-        } catch (JSONException e ) {
+        } catch (JSONException e) {
             Log.e(LOG_TAG, "String to JSON failed: " + e);
             return null;
         }

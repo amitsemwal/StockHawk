@@ -1,6 +1,7 @@
 package com.sam_chordas.android.stockhawk.ui;
 
 import android.app.LoaderManager;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
@@ -63,6 +64,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     private QuoteCursorAdapter mCursorAdapter;
     private Context mContext;
     private Cursor mCursor;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,6 +106,8 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
                         // Intent graphIntent = new Intent(mContext, GraphActivity.class);
                         //     graphIntent.putExtra("symbol", mCursor.getString(mCursor.getColumnIndex("symbol")));
                         // mContext.startActivity(graphIntent);
+
+                        progressDialog = ProgressDialog.show(mContext, "Loading", getString(R.string.graph_data_loading));
 
                         mServiceIntent.putExtra("tag", "history");
                         mServiceIntent.putExtra("symbol", selectedSymbol);
@@ -262,6 +266,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
         Intent graphIntent = new Intent(mContext, GraphActivity.class);
         graphIntent.putParcelableArrayListExtra("graphdata", historicalData);
         graphIntent.putExtra("symbol", historicalData.get(0).getSymbol());
+        progressDialog.dismiss();
         mContext.startActivity(graphIntent);
 
     }

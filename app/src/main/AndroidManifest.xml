@@ -43,7 +43,14 @@
             android:authorities="com.sam_chordas.android.stockhawk.data.QuoteProvider"
             android:exported="false" />
 
-        <activity android:name=".ui.GraphActivity"></activity><!-- ATTENTION: This was auto-generated to add Google Play services to your project for
+        <activity android:name=".ui.GraphActivity">
+            android:parentActivityName=com.sam_chordas.android.stockhawk.ui.MyStocksActivity" >
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.sam_chordas.android.stockhawk.ui.MyStocksActivity" />
+        </activity>
+        <!-- ATTENTION: This was auto-generated to add Google Play services to your project for
      App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information. -->
         <meta-data
             android:name="com.google.android.gms.version"

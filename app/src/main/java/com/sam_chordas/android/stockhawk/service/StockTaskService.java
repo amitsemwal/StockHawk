@@ -124,8 +124,8 @@ public class StockTaskService extends GcmTaskService {
             // get symbol from params.getExtra and build query
             String stockInput = params.getExtras().getString("symbol");
             try {
-                urlStringBuilder.append(URLEncoder.encode("\"" + stockInput + "\" and startDate = \"2015-01-11\" and" +
-                        " endDate = \"2016-02-10\"", "UTF-8"));
+                urlStringBuilder.append(URLEncoder.encode("\"" + stockInput + "\" and startDate = \"" + Utils.getDate(365) + "\" and" +
+                        " endDate = \"" + Utils.getDate(0) + "\"", "UTF-8"));
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
@@ -152,12 +152,11 @@ public class StockTaskService extends GcmTaskService {
                         mContext.getContentResolver().update(QuoteProvider.Quotes.CONTENT_URI, contentValues,
                                 null, null);
                     }
-                    if (params.getTag().equals("history")){
+                    if (params.getTag().equals("history")) {
                         ArrayList<Quote> quoteHistory = Utils.historyQuoteJsonToArrayList(getResponse);
                         bus.post(quoteHistory);
 
-                    }
-                    else {
+                    } else {
                         ArrayList<ContentProviderOperation> contentProviderOperations =
                                 Utils.quoteJsonToContentVals(getResponse);
 

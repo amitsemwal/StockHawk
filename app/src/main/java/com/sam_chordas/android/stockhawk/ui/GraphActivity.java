@@ -1,168 +1,124 @@
 package com.sam_chordas.android.stockhawk.ui;
 
-import android.app.Activity;
-import android.app.LoaderManager;
-import android.content.Context;
-import android.content.CursorLoader;
+import android.animation.PropertyValuesHolder;
 import android.content.Intent;
-import android.content.Loader;
-import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.graphics.Color;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
+import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.TextView;
 
+import com.db.chart.Tools;
 import com.db.chart.model.LineSet;
 import com.db.chart.view.LineChartView;
+import com.db.chart.view.Tooltip;
 import com.sam_chordas.android.stockhawk.Quote;
 import com.sam_chordas.android.stockhawk.R;
-import com.sam_chordas.android.stockhawk.data.QuoteColumns;
-import com.sam_chordas.android.stockhawk.data.QuoteProvider;
-import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class GraphActivity extends Activity implements LoaderManager.LoaderCallbacks<Cursor> {
-    public static final int CURSOR_LOADER_ID=0;
+public class GraphActivity extends AppCompatActivity {
     private static final String LOG_TAG = GraphActivity.class.getSimpleName();
+    private final String[] mMonths = {"", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
     private LineChartView mLineChart;
-    private LineChartView mLineChart1;
-    private Intent mServiceIntent;
-    private Context mContext;
-    private Cursor mCursor;
-    private boolean isConnected;
     private ArrayList<Quote> quoteArrayList;
     private String mSymbl;
-    private Bundle args = new Bundle();
+    private Tooltip mTip;
+    private Runnable mBaseAction;
+    private Typeface robotoLight;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mContext = this;
-        ConnectivityManager cm =
-                (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+        //       mContext = this;
 
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        isConnected = activeNetwork != null &&
-                activeNetwork.isConnectedOrConnecting();
         setContentView(R.layout.activity_line_graph);
         mLineChart = (LineChartView) findViewById(R.id.linechart);
-        mLineChart1 = (LineChartView) findViewById(R.id.linechart1);
 
         Intent intent = getIntent();
         mSymbl = intent.getStringExtra("symbol");
-        //      args.putString("symbol",mSymbl);
-        quoteArrayList = intent.getParcelableArrayListExtra("graphdata");
-        //   mSymbl = quoteArrayList.get(0).getSymbol();
-        drawGraphofLastWeek();
-
-//        Log.e(LOG_TAG, args.getString("symbol"));
-        getLoaderManager().initLoader(CURSOR_LOADER_ID, args, this);
-
-    }
-
-    private void drawGraphofLastWeek() {
-        LineSet mLineSet = new LineSet();
-
-        ArrayList<Float> range = new ArrayList();
-        int i = 0;
-        for (i = quoteArrayList.size() - 1; i >= 0; i--) {
-            Quote item = quoteArrayList.get(i);
-            float closingVal = (float) item.getClose();
-            range.add(closingVal);
-            mLineSet.addPoint("", closingVal);
-
+        try {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setTitle("Graph of " + mSymbl);
+        } catch (NullPointerException e) {
+            e.printStackTrace();
         }
 
-        int minRange = Math.round(Collections.min(range));
-        int maxRange = Math.round(Collections.max(range));
-        maxRange = ((maxRange + 99) / 100) * 100;
+        //if savedInstanceState is null
+        if (savedInstanceState == null) {
 
-        mLineSet.setDotsColor(Color.parseColor("#00BFFF"));
-        mLineSet.setDotsRadius(2);
-        minRange = ((minRange - 99) / 100) * 100;
-        minRange = ((minRange - 99) / 100) * 100;
+            quoteArrayList = intent.getParcelableArrayListExtra("graphdata");
+        } else quoteArrayList = savedInstanceState.getParcelableArrayList("graphdata");
+        drawGraphofLastWeek();
 
-        mLineChart.setAxisBorderValues(minRange - 10, maxRange + 10, 10).setLabelsColor(Color.parseColor("#FF8E9196"));
-
-        mLineChart.addData(mLineSet);
-        mLineChart.show();
 
     }
 
     @Override
-     public void onResume() {
-         super.onResume();
-         getLoaderManager().restartLoader(CURSOR_LOADER_ID, args, this);
-     }
-     @Override
-     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-         return new CursorLoader(this, QuoteProvider.Quotes.CONTENT_URI,
-                 new String[]{},
-                 QuoteColumns.SYMBOL + " = ?",
-                 new String[]{mSymbl},
-                 null);
-     }
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList("graphdata", quoteArrayList);
+    }
 
-     @Override
-     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-         mCursor = data;
-         int i = 1;
-
-         DatabaseUtils.dumpCursor(mCursor);
-
-         LineSet mLineSet = new LineSet();
-
-         ArrayList<Float> range = new ArrayList<Float>();
-         mCursor.moveToFirst();
-         while (mCursor.moveToNext()) {
-             float price = Float.parseFloat(mCursor.getString(mCursor.getColumnIndex(QuoteColumns.BIDPRICE)));
-             range.add(price);
-             mLineSet.addPoint(Integer.toString(i), price);
-             i++;
-         }
-
-         int minRange = Math.round(Collections.min(range));
-         int maxRange = Math.round(Collections.max(range));
-
-         maxRange = ((maxRange + 99) / 100) * 100;
-
-         mLineSet.setDotsColor(Color.parseColor("#00BFFF"));
-         mLineSet.setDotsRadius(2);
-         minRange = ((minRange - 99) / 100) * 100;
-         minRange = ((minRange - 99) / 100) * 100;
-
-         mLineChart1.setAxisBorderValues(minRange - 10, maxRange + 10, 10).setLabelsColor(Color.parseColor("#FF8E9196"));
-         mLineChart1.addData(mLineSet);
-         mLineChart1.show();
-
-
-     }
-
-     @Override
-     public void onLoaderReset(Loader<Cursor> loader) {
-
-     }
-
-    @Subscribe
-    private void drawGraphofHistoricalData() {
+    private void drawGraphofLastWeek() {
         LineSet mLineSet = new LineSet();
+        // Tooltip
+        mTip = new Tooltip(getApplicationContext(), R.layout.linechart_three_tooltip, R.id.value);
+        robotoLight = Typeface.createFromAsset(getApplicationContext().getAssets(), "fonts/Roboto-Thin.ttf");
 
-        ArrayList<Float> range = new ArrayList();
+        ((TextView) mTip.findViewById(R.id.value))
+                .setTypeface(robotoLight);
+
+        mTip.setVerticalAlignment(Tooltip.Alignment.BOTTOM_TOP);
+        mTip.setDimensions((int) Tools.fromDpToPx(65), (int) Tools.fromDpToPx(25));
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+
+            mTip.setEnterAnimation(PropertyValuesHolder.ofFloat(View.ALPHA, 1),
+                    PropertyValuesHolder.ofFloat(View.SCALE_Y, 1f),
+                    PropertyValuesHolder.ofFloat(View.SCALE_X, 1f)).setDuration(200);
+
+            mTip.setExitAnimation(PropertyValuesHolder.ofFloat(View.ALPHA, 0),
+                    PropertyValuesHolder.ofFloat(View.SCALE_Y, 0f),
+                    PropertyValuesHolder.ofFloat(View.SCALE_X, 0f)).setDuration(200);
+
+            mTip.setPivotX(Tools.fromDpToPx(65) / 2);
+            mTip.setPivotY(Tools.fromDpToPx(25));
+        }
+
+        mLineChart.setTooltips(mTip);
+
+        final ArrayList<Float> range = new ArrayList();
         int i = 0;
-        for (Quote item :
-                quoteArrayList) {
+        int month = 0;
+        for (i = quoteArrayList.size() - 1; i >= 0; i--) {
+            Quote item = quoteArrayList.get(i);
             float closingVal = (float) item.getClose();
             range.add(closingVal);
-            mLineSet.addPoint(Integer.toString(i++), closingVal);
+            int temp = Integer.parseInt(item.getStrDate().split("-")[1]);
+            if (temp != month) {
+                mLineSet.addPoint(mMonths[temp], closingVal);
+                month = temp;
+            } else
+                mLineSet.addPoint("", closingVal);
         }
 
         int minRange = Math.round(Collections.min(range));
         int maxRange = Math.round(Collections.max(range));
+        maxRange = ((maxRange + 9) / 10) * 10;
 
-        mLineSet.setDotsColor(Color.parseColor("#00BFFF"));
-        mLineChart.setAxisBorderValues(minRange - 100, maxRange + 100).setLabelsColor(Color.parseColor("#FF8E9196"));
+
+        mLineSet.setColor(Color.parseColor("#758cbb"))
+                .setFill(Color.parseColor("#2d374c"))
+                .setDotsColor(Color.parseColor("#758cbb"))
+                .setThickness(1)
+                .setDashed(new float[]{10f, 10f});
+
+        minRange = ((minRange - 9) / 10) * 10;
+
+        mLineChart.setAxisBorderValues(minRange, maxRange, 10).setLabelsColor(Color.parseColor("#FF8E9196"));
 
         mLineChart.addData(mLineSet);
         mLineChart.show();
