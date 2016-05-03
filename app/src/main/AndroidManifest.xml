@@ -29,6 +29,10 @@
         </activity>
 
         <service
+            android:name=".widget.QuoteWidgetService"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
+
+        <service
             android:name=".service.StockTaskService"
             android:exported="true"
             android:permission="com.google.android.gms.permission.BIND_NETWORK_TASK_SERVICE">
@@ -41,7 +45,7 @@
         <provider
             android:name=".data.generated.QuoteProvider"
             android:authorities="com.sam_chordas.android.stockhawk.data.QuoteProvider"
-            android:exported="false" />
+            android:exported="true" />
 
         <activity android:name=".ui.GraphActivity">
             android:parentActivityName=com.sam_chordas.android.stockhawk.ui.MyStocksActivity" >
@@ -50,11 +54,24 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.sam_chordas.android.stockhawk.ui.MyStocksActivity" />
         </activity>
-        <!-- ATTENTION: This was auto-generated to add Google Play services to your project for
-     App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information. -->
+        <!--
+     ATTENTION: This was auto-generated to add Google Play services to your project for
+     App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information.
+        -->
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
+
+        <receiver android:name=".widget.StockWidgetProvider">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.sam_chordas.android.stockhawk.ACTION_DATA_UPDATED" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/stock_widget_info" />
+        </receiver>
     </application>
 
 </manifest>

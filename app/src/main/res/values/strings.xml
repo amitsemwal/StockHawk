@@ -1,6 +1,6 @@
 <resources xmlns:xliff="http://schemas.android.com/apk/res-auto">
 
-    <string name="app_name">Stock Hawk</string>
+    <string name="app_name" translatable="false">Stock Hawk</string>
 
     <string name="action_example">Example action</string>
 
@@ -8,7 +8,7 @@
     <string name="action_change_units">Change Units</string>
     <string name="symbol_search">Symbol Search</string>
     <string name="content_test">Search for a Stock Symbol</string>
-    <string name="input_hint">FB</string>
+    <string name="input_hint" translatable="false">FB</string>
     <string name="input_prefill"></string>
     <string name="network_toast">Uh-oh! This app requires an internet connection</string>
     <string name="duplicate_stock">Uh-oh! This stock is already saved!</string>
@@ -27,5 +27,9 @@
     <string name="a11y_symbol">Stock symbol: <xliff:g id="symbol">%1$s</xliff:g></string>
     <string name="error_old_version">Your device has old play servicwersion. Stocks not updatedautomatically</string>
     <string name="graph_data_loading">Wait while loading...</string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="add_widget">Add widget</string>
+    <string name="widget_title" translatable="false">StockHawk</string>
+    <string name="graph_activity_title">Graph of <xliff:g id="bid_price">%1$s</xliff:g></string>
 
 </resources>

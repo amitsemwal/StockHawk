@@ -14,8 +14,8 @@ import com.db.chart.Tools;
 import com.db.chart.model.LineSet;
 import com.db.chart.view.LineChartView;
 import com.db.chart.view.Tooltip;
-import com.sam_chordas.android.stockhawk.Quote;
 import com.sam_chordas.android.stockhawk.R;
+import com.sam_chordas.android.stockhawk.model.Quote;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,7 +41,7 @@ public class GraphActivity extends AppCompatActivity {
         mSymbl = intent.getStringExtra("symbol");
         try {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setTitle("Graph of " + mSymbl);
+            getSupportActionBar().setTitle(getString(R.string.graph_activity_title, mSymbl));
         } catch (NullPointerException e) {
             e.printStackTrace();
         }

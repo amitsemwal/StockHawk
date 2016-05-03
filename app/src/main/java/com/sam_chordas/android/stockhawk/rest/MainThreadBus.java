@@ -1,4 +1,4 @@
-package com.sam_chordas.android.stockhawk.ui;
+package com.sam_chordas.android.stockhawk.rest;
 
 import android.os.Handler;
 import android.os.Looper;

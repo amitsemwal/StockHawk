@@ -3,10 +3,10 @@ package com.sam_chordas.android.stockhawk.rest;
 import android.content.ContentProviderOperation;
 import android.util.Log;
 
-import com.sam_chordas.android.stockhawk.Quote;
-import com.sam_chordas.android.stockhawk.QuoteBuilder;
 import com.sam_chordas.android.stockhawk.data.QuoteColumns;
 import com.sam_chordas.android.stockhawk.data.QuoteProvider;
+import com.sam_chordas.android.stockhawk.model.Quote;
+import com.sam_chordas.android.stockhawk.model.QuoteBuilder;
 
 import org.json.JSONArray;
 import org.json.JSONException;

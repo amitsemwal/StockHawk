@@ -1,6 +1,4 @@
-package com.sam_chordas.android.stockhawk;
-
-import com.squareup.otto.Bus;
+package com.sam_chordas.android.stockhawk.model;
 
 public class QuoteBuilder {
     private double high;
