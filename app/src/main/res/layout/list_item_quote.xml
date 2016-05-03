@@ -30,10 +30,10 @@
         style="@style/BidPriceTextStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingEnd="10sp"
-        android:paddingLeft="10sp"
-        android:paddingRight="10sp"
-        android:paddingStart="10sp"
+        android:paddingEnd="@dimen/quote_price_padding"
+        android:paddingLeft="@dimen/quote_price_padding"
+        android:paddingRight="@dimen/quote_price_padding"
+        android:paddingStart="@dimen/quote_price_padding"
         tools:text="1000.00"
         />
     <TextView
@@ -42,10 +42,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/percent_change_pill"
-        android:paddingEnd="3dp"
-        android:paddingLeft="3dp"
-        android:paddingRight="3dp"
-        android:paddingStart="3dp"
+        android:paddingEnd="quote_change_padding"
+        android:paddingLeft="quote_change_padding"
+        android:paddingRight="quote_change_padding"
+        android:paddingStart="quote_change_padding"
         tools:text="100%"
         />
   </LinearLayout>
